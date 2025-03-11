@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<h1>hello.html</h1>
+
+<h4 th:text="${name}"></h4>
+
+<div th:with="num1=${5}, num2=${3}">
+    <div>
+        result : <span th:text="${num1 + num2}"></span>
+    </div>
+</div>
+
+<div>[[${list}]]</div>
+
+<div th:each="s : ${list}">
+    <div>[[${s}]]</div>
+</div>
+
+<ul>
+    <th:block th:each="s : ${list}">
+        <li>[[${s}]]</li>
+    </th:block>
+</ul>
+
+<!-- status의 속성으로 index(0부터 시작) / count(1부터 시작) / size /
+     first / last / odd(count값 홀수) / even(count값 짝수) 사용 가능 -->
+
+<div th:each="s, status : ${list}">
+    <div>[[${status.index}]] , [[${status.count}]] --- [[${s}]]</div>
+</div>
+
+<!-- th:if / th:unless(not if) -->
+<ul>
+    <th:block th:each="s, status : ${list}">
+        <li th:if="${status.odd}">홀수 : [[${s}]]</li>
+        <li th:unless="${status.odd}">짝수 : [[${s}]]</li>
+    </th:block>
+</ul>
+
+<!-- th:switch, th:case -->
+<ul>
+    <li th:each="s, status : ${list}">
+        <th:block th:switch="${status.index}">
+            <span th:case="0">[[${s}]]0</span>
+            <span th:case="1">[[${s}]]1</span>
+            <span th:case="2">[[${s}]]2</span>
+            <span th:case="3">[[${s}]]3</span>
+        </th:block>
+    </li>
+</ul>
+
+</body>
+</html>
