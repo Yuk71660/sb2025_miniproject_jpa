@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+    <div th:text="${strList}" ></div>
+    <div th:text="${map}" ></div>
+    <div th:text="${str}" ></div>
+    <div th:text="${obj}" ></div>
+
+    <!-- 자바에서 바인딩 한 데이터타입 그대로 js에서 사용 가능 -->
+    <script th:inline="javascript">
+        const strList = [[${strList}]];
+        const map = [[${map}]];
+        const str = [[${str}]];
+        const obj = [[${obj}]];
+
+        console.log(strList);
+        console.log(map);
+        console.log(str);
+        console.log(obj);
+    </script>
+
+</body>
+</html>

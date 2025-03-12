@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -43,6 +43,12 @@
     </th:block>
 </ul>
 
+<ul>
+    <th:block th:each="s, status : ${list}">
+        <li th:text="${status.odd}?'홀수 : '+${s}:'짝수 : '+${s}"></li>
+    </th:block>
+</ul>
+
 <!-- th:switch, th:case -->
 <ul>
     <li th:each="s, status : ${list}">
@@ -54,6 +60,8 @@
         </th:block>
     </li>
 </ul>
+
+<a th:href="@{/(status='success', userId=${name})}">시작페이지</a>
 
 </body>
 </html>
