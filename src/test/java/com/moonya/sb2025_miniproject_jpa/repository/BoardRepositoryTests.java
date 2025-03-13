@@ -124,4 +124,23 @@ public class BoardRepositoryTests {
         }
     }
 
+    @Test
+    public void testFindByTitleLike() {
+        Pageable pageable = PageRequest.of(0, 5, Sort.by("bno").descending());
+        List<Board> boardList = boardRepository.findByTitleLike("%1%", pageable);
+        boardList.forEach(board -> log.info(board));
+    }
+
+    @Test
+    public void testFindByBnoLessThanEqual() {
+        List<Board> boardList = boardRepository.findByBnoLessThanEqual(30L);
+        boardList.forEach(board -> log.info(board));
+    }
+
+    @Test
+    public void testGetBoardLatest5() {
+        List<Board> boardList = boardRepository.getBoardLatest5();
+        boardList.forEach(board -> log.info(board));
+    }
+
 }
