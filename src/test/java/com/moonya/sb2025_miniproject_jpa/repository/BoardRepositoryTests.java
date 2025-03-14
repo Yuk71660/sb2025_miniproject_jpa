@@ -1,6 +1,8 @@
 package com.moonya.sb2025_miniproject_jpa.repository;
 
 import com.moonya.sb2025_miniproject_jpa.domain.Board;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.annotation.Commit;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +24,10 @@ public class BoardRepositoryTests {
     @Autowired
     private BoardRepository boardRepository; // 테스트 유닛 에서는 보통 테스트 대상을 주입 받는다...
 
-    //    @Test
+//    @Autowired
+//    private EntityManager em;
+
+    // @Test
     public void testInsert() {
         Board newBoard = Board.builder()
                 .title("insert test")
@@ -40,11 +46,11 @@ public class BoardRepositoryTests {
 
         Optional<Board> result = boardRepository.findById(5L);
 
-//        if(result.isPresent()){
-//        log.info("select 결과 : " + result.get());
-//        } else {
-//            log.info("게시글없음!");
-//        }
+        // if(result.isPresent()){
+        // log.info("select 결과 : " + result.get());
+        // } else {
+        // log.info("게시글없음!");
+        // }
 
         Board board = result.orElseThrow();
 
@@ -57,9 +63,9 @@ public class BoardRepositoryTests {
 
         List<Board> boardList = boardRepository.findAll(Sort.by("bno").descending());
 
-//        for (Board b : boardList){
-//        log.info(b.toString());
-//        }
+        // for (Board b : boardList){
+        // log.info(b.toString());
+        // }
 
         boardList.forEach(board -> log.info(board));
 
@@ -89,22 +95,22 @@ public class BoardRepositoryTests {
     @Test
     public void testDelete() {
         Optional<Board> result = boardRepository.findById(3L);
-        if (result.isPresent()){
-        boardRepository.deleteById(3L);
+        if (result.isPresent()) {
+            boardRepository.deleteById(3L);
         }
     }
 
-//    @Test
+    // @Test
     public void insertDummies() {
 
-        IntStream.range(1,101).forEach(i->{
+        IntStream.range(1, 101).forEach(i -> {
             Board newBoard = Board.builder()
                     .title("title..." + i)
                     .writer("user" + i % 10)
                     .content("content..." + i)
                     .build();
 
-        boardRepository.save(newBoard);
+            boardRepository.save(newBoard);
 
         });
 
@@ -119,8 +125,8 @@ public class BoardRepositoryTests {
         result.getContent().forEach(board -> log.info(board));
 
         if (result.hasNext()) {
-        Page<Board> resultt = boardRepository.findAll(result.getPageable().next());
-        resultt.getContent().forEach(board -> log.info(board));
+            Page<Board> resultt = boardRepository.findAll(result.getPageable().next());
+            resultt.getContent().forEach(board -> log.info(board));
         }
     }
 
@@ -141,6 +147,35 @@ public class BoardRepositoryTests {
     public void testGetBoardLatest5() {
         List<Board> boardList = boardRepository.getBoardLatest5();
         boardList.forEach(board -> log.info(board));
+    }
+
+    @Test
+    public void testGetBoard() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Board> result = boardRepository.getBoardByWriterKeyword("er9", pageable);
+        result.getContent().forEach(board -> log.info(board));
+    }
+
+    @Test
+    @Transactional // 이 어노테이션을 사용하지 않으면 트랜잭션 리콰이어드 익셉션 발생
+    @Commit // test모듈에서는 자동롤백있어서 커밋하려면 이거 넣어야함
+    public void testUpdateBoardTitleAndContent() {
+        int result = boardRepository.updateBoardTitleAndContent("updateTest", "updateTestttttt", 6L);
+        log.info(result);
+    }
+
+    @Test
+    public void testUpdateBoard() {
+        Long bno = 6L;
+        String title = "수정테스트", content = "테스트중";
+        Optional<Board> result = boardRepository.findById(bno);
+        if (result.isPresent()) {
+            Board board = result.get();
+            board.setTitle(title);
+            board.setContent(content);
+            boardRepository.save(board);
+        }
+
     }
 
 }
