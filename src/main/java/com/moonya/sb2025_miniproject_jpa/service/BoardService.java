@@ -6,5 +6,8 @@ public interface BoardService {
     Long registerBoard(BoardDTO boardDTO);
 
     BoardDTO readOne(Long bno);
-    
+
+    void modifyBoard(BoardDTO boardDTO);
+
+    void removeBoard(Long bno);
 }

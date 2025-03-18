@@ -8,6 +8,7 @@ import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -34,6 +35,30 @@ public class BoardServiceImpl implements BoardService {
         Board board = result.orElseThrow();
         BoardDTO dto = modelMapper.map(board, BoardDTO.class);
         return dto;
+    }
+
+    @Override
+    public void modifyBoard(BoardDTO boardDTO) {
+        Optional<Board> result = boardRepository.findById(boardDTO.getBno());
+        if (result.isPresent()) {
+            Board board = result.get();
+
+            board.setTitle( boardDTO.getTitle());
+            board.setContent(boardDTO.getContent());
+
+            boardRepository.save(board);
+        }
+    }
+
+    @Override
+    public void removeBoard(Long bno) {
+        Optional<Board> result = boardRepository.findById(bno);
+        if (result.isPresent()) {
+            boardRepository.deleteById(bno);
+        } else {
+            throw new NoSuchElementException();
+        }
+
     }
 
 }

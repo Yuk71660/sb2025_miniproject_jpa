@@ -25,9 +25,25 @@ public class BoardServiceTests {
     }
 
     @Test
-    public void testReadOne(){
+    public void testReadOne() {
         long bno = 6;
         BoardDTO boardDTO = boardService.readOne(bno);
         log.info(boardDTO);
+    }
+
+    @Test
+    public void testModifyBoard() {
+        BoardDTO boardDTO = BoardDTO.builder()
+                .bno(6L)
+                .title("수정")
+                .content("수정중...")
+                .build();
+        boardService.modifyBoard(boardDTO);
+    }
+
+    @Test
+    public void testRemoveBoard() {
+        long bno = 6;
+        boardService.removeBoard(bno);
     }
 }
