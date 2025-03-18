@@ -8,6 +8,8 @@ import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Log4j2
@@ -25,4 +27,13 @@ public class BoardServiceImpl implements BoardService {
 
         return board.getBno();
     }
+
+    @Override
+    public BoardDTO readOne(Long bno) {
+        Optional<Board> result = boardRepository.findById(bno);
+        Board board = result.orElseThrow();
+        BoardDTO dto = modelMapper.map(board, BoardDTO.class);
+        return dto;
+    }
+
 }

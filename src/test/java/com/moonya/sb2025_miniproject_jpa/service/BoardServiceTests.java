@@ -23,4 +23,11 @@ public class BoardServiceTests {
         long i = boardService.registerBoard(boardDTO);
         log.info(i);
     }
+
+    @Test
+    public void testReadOne(){
+        long bno = 6;
+        BoardDTO boardDTO = boardService.readOne(bno);
+        log.info(boardDTO);
+    }
 }
