@@ -2,6 +2,7 @@ package com.moonya.sb2025_miniproject_jpa.repository;
 
 import com.moonya.sb2025_miniproject_jpa.domain.Board;
 
+import com.moonya.sb2025_miniproject_jpa.repository.search.BoardSearch;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface BoardRepository extends JpaRepository<Board, Long> {
+public interface BoardRepository extends JpaRepository<Board, Long>, BoardSearch {
     // JpaRepository 에 선언된 메서드들 상속 받아서 여쯤 어디에 있는 느낌
 
     // JPA 에서는 필요 하다면... 쿼리문 이용 가능

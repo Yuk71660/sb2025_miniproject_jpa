@@ -178,4 +178,19 @@ public class BoardRepositoryTests {
 
     }
 
+    @Test
+    public void testSearchBoardTitle3() {
+        Page<Board> result = boardRepository.searchBoardTitle3(PageRequest.of(0,3));
+
+        result.getContent().forEach(board -> log.info(board));
+    }
+
+    @Test
+    public void testSearchAll() {
+        String[] searchTypes = {"t", "w", "c"};
+        String keyword = "e";
+        Page<Board> result = boardRepository.searchAll(searchTypes, keyword, PageRequest.of(0,3));
+
+        result.getContent().forEach(board -> log.info(board));
+    }
 }
