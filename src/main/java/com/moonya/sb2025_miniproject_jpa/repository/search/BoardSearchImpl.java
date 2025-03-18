@@ -2,6 +2,7 @@ package com.moonya.sb2025_miniproject_jpa.repository.search;
 
 import com.moonya.sb2025_miniproject_jpa.domain.Board;
 import com.moonya.sb2025_miniproject_jpa.domain.QBoard;
+import com.moonya.sb2025_miniproject_jpa.dto.PageRequestDTO;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;
 import org.springframework.data.domain.Page;
@@ -76,4 +77,5 @@ public class BoardSearchImpl extends QuerydslRepositorySupport implements BoardS
         return new PageImpl<>(boardList, pageable, count);
 
     }
+
 }

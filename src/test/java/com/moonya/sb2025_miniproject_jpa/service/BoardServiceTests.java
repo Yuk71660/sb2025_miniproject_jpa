@@ -46,4 +46,21 @@ public class BoardServiceTests {
         long bno = 6;
         boardService.removeBoard(bno);
     }
+
+    @Test
+    public void testStringToStringArray() {
+        String searchType = "tw";
+
+
+        char[] charArray = searchType.toCharArray();
+        String[] searchTypes = new String[charArray.length];
+
+//       String[] searchTypes = searchType.split("");
+
+        for (int i = 0; i < charArray.length; i++) {
+            searchTypes[i] = String.valueOf(charArray[i]);
+        }
+
+        log.info(searchTypes);
+    }
 }
