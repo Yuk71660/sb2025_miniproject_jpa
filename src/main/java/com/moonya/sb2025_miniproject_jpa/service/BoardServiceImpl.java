@@ -2,12 +2,18 @@ package com.moonya.sb2025_miniproject_jpa.service;
 
 import com.moonya.sb2025_miniproject_jpa.domain.Board;
 import com.moonya.sb2025_miniproject_jpa.dto.BoardDTO;
+import com.moonya.sb2025_miniproject_jpa.dto.PageRequestDTO;
+import com.moonya.sb2025_miniproject_jpa.dto.PageResponseDTO;
 import com.moonya.sb2025_miniproject_jpa.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -60,5 +66,26 @@ public class BoardServiceImpl implements BoardService {
         }
 
     }
+
+    @Override
+    public PageResponseDTO list(PageRequestDTO pageRequestDTO) {
+        String[] searchTypes = pageRequestDTO.getSearchTypes();
+        String keyword = pageRequestDTO.getKeyword();
+        Pageable pageable = pageRequestDTO.getPageable("bno");
+
+        Page<Board> result = boardRepository.searchAll(searchTypes, keyword, pageable);
+
+        List<BoardDTO> dtoList = result.getContent().stream()
+                .map(board -> modelMapper.map(board, BoardDTO.class))
+                .toList();
+
+
+        return PageResponseDTO.withAll()
+                .pageRequestDTO(pageRequestDTO)
+                .dtoList(dtoList)
+                .total((int) result.getTotalElements())
+                .build();
+    }
+
 
 }

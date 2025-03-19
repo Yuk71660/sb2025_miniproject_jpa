@@ -51,7 +51,7 @@ public class BoardSearchImpl extends QuerydslRepositorySupport implements BoardS
 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
 
-        if ((searchTypes.length > 0 && searchTypes != null) && keyword != null) {
+        if ((searchTypes != null && searchTypes.length > 0) && keyword != null) {
             for (String type : searchTypes) {
                 switch (type) {
                     case "t":

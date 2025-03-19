@@ -1,6 +1,8 @@
 package com.moonya.sb2025_miniproject_jpa.service;
 
 import com.moonya.sb2025_miniproject_jpa.dto.BoardDTO;
+import com.moonya.sb2025_miniproject_jpa.dto.PageRequestDTO;
+import com.moonya.sb2025_miniproject_jpa.dto.PageResponseDTO;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,5 +64,17 @@ public class BoardServiceTests {
         }
 
         log.info(searchTypes);
+    }
+
+    @Test
+    public void testList() {
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
+                .page(1)
+                .size(10)
+                .searchType("t")
+                .keyword("3")
+                .build();
+        PageResponseDTO pageResponseDTO = boardService.list(pageRequestDTO);
+        pageResponseDTO.getDtoList().forEach(boardDTO -> log.info(boardDTO));
     }
 }
