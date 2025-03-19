@@ -11,7 +11,7 @@ import java.net.URLEncoder;
 @Builder
 @Data
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class PageRequestDTO {
     @Builder.Default // 빌더패턴으로 객체 만들 때 디폴트값 주려면 필요함
     private int page = 1, size = 10;
