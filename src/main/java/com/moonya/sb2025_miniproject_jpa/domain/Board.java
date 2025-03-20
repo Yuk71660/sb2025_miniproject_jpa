@@ -21,6 +21,8 @@ public class Board extends BaseEntity {
     private String title;
     @Column(length = 2000, nullable = false)
     private String content;
+    @Builder.Default
+    private Long readCount = 0L;
 
     public void setTitle(String title) {
         this.title = title;
