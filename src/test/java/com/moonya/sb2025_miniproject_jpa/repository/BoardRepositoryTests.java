@@ -100,7 +100,7 @@ public class BoardRepositoryTests {
         }
     }
 
-    // @Test
+//     @Test
     public void insertDummies() {
 
         IntStream.range(1, 101).forEach(i -> {

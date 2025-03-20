@@ -4,6 +4,57 @@ xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout/basic.html}">
 
 <div layout:fragment="content">
     <h1>Board List</h1>
+
+    <div>[[${pageResponseDTO}]]</div>
+
+    <div class="board">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>bno</th>
+                <th>title</th>
+                <th>writer</th>
+                <th>readCount</th>
+                <th>regDate</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="board:${pageResponseDTO.dtoList}">
+                <td>[[${board.bno}]]</td>
+                <td style="flex:1;">[[${board.title}]]</td>
+                <td>[[${board.writer}]]</td>
+                <td>[[${board.readCount}]]</td>
+                <td>[[${#temporals.format(board.regDate,"yyyy-MM-dd")}]]</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+<!--   pageResponseDTO   page=1, size=10, total=100, totalPage=10, start=1, end=10, prev=false, next=false,-->
+    <ul class="pagination justify-content-center" style="margin:20px 0">
+
+        <li class="page-item" th:if="${pageResponseDTO.start != 1}">
+            <a class="page-link" th:href="@{/board/list(page=${pageResponseDTO.start - 1})}">PrevBlock</a>
+        </li>
+
+        <li class="page-item" th:if="${pageResponseDTO.page > 1}">
+            <a class="page-link" th:href="@{/board/list(page=${pageResponseDTO.page - 1})}">Prev</a>
+        </li>
+
+        <th:block th:each="i:${pageResponseDTO.pageNationList}">
+            <li th:class="${pageResponseDTO.page == i}? 'page-item active' : 'page-item'">
+                <a class="page-link" th:href="@{/board/list(page=${i})}">[[${i}]]</a>
+            </li>
+        </th:block>
+
+        <li class="page-item" th:if="${pageResponseDTO.page < pageResponseDTO.totalPage}">
+            <a class="page-link" th:href="@{/board/list(page=${pageResponseDTO.page + 1})}">Next</a>
+        </li>
+
+        <li class="page-item" th:if="${pageResponseDTO.end != pageResponseDTO.totalPage}">
+            <a class="page-link" th:href="@{/board/list(page=${pageResponseDTO.end + 1})}">NextBlock</a>
+        </li>
+    </ul>
+
 </div>
 
 
