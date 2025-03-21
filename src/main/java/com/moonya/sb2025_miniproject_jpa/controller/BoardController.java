@@ -23,4 +23,17 @@ public class BoardController {
     public void list(Model model, PageRequestDTO pageRequestDTO) {
         model.addAttribute("pageResponseDTO", boardService.list(pageRequestDTO));
     }
+
+    @GetMapping("/registerForm")
+    public String registerForm() {
+
+        return "board/registerForm";
+    }
+
+    @PostMapping("/register")
+    public String register(BoardDTO boardDTO) {
+        boardService.register(boardDTO);
+        return "redirect:/board/list";
+    }
+
 }

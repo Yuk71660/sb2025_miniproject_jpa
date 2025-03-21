@@ -83,6 +83,8 @@ public class BoardServiceImpl implements BoardService {
         return PageResponseDTO.withAll()
                 .pageRequestDTO(pageRequestDTO)
                 .dtoList(dtoList)
+                .searchType(pageRequestDTO.getSearchType())
+                .keyword(pageRequestDTO.getKeyword())
                 .total((int) result.getTotalElements())
                 .build();
     }
