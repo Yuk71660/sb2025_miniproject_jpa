@@ -24,6 +24,8 @@ public class PageResponseDTO {
     private boolean prev; // 이전 블럭 존재 여부
     private boolean next; // 다음 블럭 존재 여부
 
+    private String link;
+
     private String searchType;
     private String keyword;
 
@@ -32,7 +34,7 @@ public class PageResponseDTO {
     private List<Integer> pageNationList = new ArrayList<>();
 
     @Builder(builderMethodName = "withAll")
-    public PageResponseDTO(PageRequestDTO pageRequestDTO, List<BoardDTO> dtoList, int total, String searchType, String keyword) {
+    public PageResponseDTO(PageRequestDTO pageRequestDTO, List<BoardDTO> dtoList, int total, String searchType, String keyword, String link) {
         if (total <= 0) {
             this.dtoList = List.of();
             this.pageNationList = List.of();
@@ -41,6 +43,7 @@ public class PageResponseDTO {
         this.searchType = searchType;
         this.keyword = keyword;
 
+        this.link = link
 
         this.total = total;
         this.page = pageRequestDTO.getPage();

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org"
-      layout:decorate="~{layout/basic.html}">
-
+    layout:decorate="~{layout/basic.html}">
 
 <div layout:fragment="content" class="container">
     <h1>게시글 등록</h1>
+
     <form action="/board/register" method="post" class="mt-4">
         <div class="mb-3">
             <label for="title" class="form-label">제목</label>
@@ -26,8 +26,46 @@
             <button type="button" class="btn btn-secondary" onclick="location.href='/board/list'">취소</button>
         </div>
     </form>
+
+    <!-- 모달 -->
+    <div class="modal" id="errorModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">오류 메시지</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="error-message">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary close" data-bs-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
-<script layout:fragment="script" th:inline="javascript">
+<script layout:fragment="scripts" th:inline="javascript">
+    const errors = [[${errors}]];
+    console.log("errors", errors);
+    let errorMsg = ``;
+    if (errors) {
+        for (let error of errors) {
+            errorMsg += `<div>${error.field}에 ${error.defaultMessage} 에러 발생!</div>`;
+        }
+        document.querySelector(".error-message").innerHTML = errorMsg;
+        document.getElementById("errorModal").style.display = "block";
+
+    }
+
+    const closeModal = document.querySelector(".close");
+    closeModal.addEventListener("click", function () {
+        document.getElementById("errorModal").style.display = "none";
+    });
 
 </script>
+
+</html>

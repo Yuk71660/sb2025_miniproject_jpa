@@ -18,9 +18,12 @@ public class PageRequestDTO {
 
     private String searchType, keyword;
 
+    private String link;
+
 //    public String[] getSearchTypes() {
 //
-////        searchType.split("");
+
+    /// /        searchType.split("");
 //        if (searchType == null || searchType.isEmpty()){
 //            return null;
 //        } else {
@@ -35,6 +38,26 @@ public class PageRequestDTO {
 //        }
 //
 //    };
+    public String getLink() {
+        if (link == null) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("page=" + this.page);
+            stringBuilder.append("&size=" + this.size);
+            if (searchType != null && searchType.length() > 0) {
+                stringBuilder.append("&serchType=" + this.searchType);
+            }
+            if (keyword != null && keyword.length() > 0) {
+
+                try {
+                    stringBuilder.append("&keyword=" + URLEncoder.encode(keyword, "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            this.link = stringBuilder.toString();
+        }
+        return this.link;
+    }
 
     public String[] getSearchTypes() {
         if (searchType == null || searchType.isEmpty()) {
@@ -44,7 +67,7 @@ public class PageRequestDTO {
         }
     }
 
-    public Pageable getPageable(String...props) {
-        return PageRequest.of(this.page -1, this.size, Sort.by(props).descending());
+    public Pageable getPageable(String... props) {
+        return PageRequest.of(this.page - 1, this.size, Sort.by(props).descending());
     }
 }
