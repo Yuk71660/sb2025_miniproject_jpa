@@ -36,11 +36,19 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardDTO readOne(Long bno) {
+    public BoardDTO readOne(Long bno, String ipAddr) {
+
         Optional<Board> result = boardRepository.findById(bno);
         Board board = result.orElseThrow();
+
+        readCountProcess(bno, ipAddr);
+
         BoardDTO dto = modelMapper.map(board, BoardDTO.class);
         return dto;
+    }
+
+    private void readCountProcess(Long bno, String ipAddr) {
+        
     }
 
     @Override

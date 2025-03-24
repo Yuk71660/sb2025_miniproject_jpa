@@ -4,6 +4,8 @@ import com.moonya.sb2025_miniproject_jpa.dto.BoardDTO;
 import com.moonya.sb2025_miniproject_jpa.dto.PageRequestDTO;
 import com.moonya.sb2025_miniproject_jpa.dto.PageResponseDTO;
 import com.moonya.sb2025_miniproject_jpa.service.BoardService;
+import com.moonya.sb2025_miniproject_jpa.util.GetClientIPAddr;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 
@@ -48,6 +50,15 @@ public class BoardController {
         Long bno = boardService.registerBoard(boardDTO);
         redirectAttributes.addFlashAttribute("result", bno + "번 게시글 등록 완료");
         return "redirect:/board/list";
+    }
+
+    @GetMapping("/read")
+    public void readBoard(Long bno, PageRequestDTO pageRequestDTO, Model model, HttpServletRequest request) {
+        log.info(bno);
+
+        String ipAddr = GetClientIPAddr.getClientIp(request);
+
+        model.addAttribute("dto", boardService.readOne(bno, ipAddr));
     }
 
 }

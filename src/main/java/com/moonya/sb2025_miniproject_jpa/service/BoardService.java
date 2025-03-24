@@ -7,7 +7,7 @@ import com.moonya.sb2025_miniproject_jpa.dto.PageResponseDTO;
 public interface BoardService {
     Long registerBoard(BoardDTO boardDTO);
 
-    BoardDTO readOne(Long bno);
+    BoardDTO readOne(Long bno, String addr);
 
     void modifyBoard(BoardDTO boardDTO);
 

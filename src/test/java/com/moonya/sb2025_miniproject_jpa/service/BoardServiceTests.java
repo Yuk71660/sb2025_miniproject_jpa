@@ -29,7 +29,7 @@ public class BoardServiceTests {
     @Test
     public void testReadOne() {
         long bno = 6;
-        BoardDTO boardDTO = boardService.readOne(bno);
+        BoardDTO boardDTO = boardService.readOne(bno, null);
         log.info(boardDTO);
     }
 
