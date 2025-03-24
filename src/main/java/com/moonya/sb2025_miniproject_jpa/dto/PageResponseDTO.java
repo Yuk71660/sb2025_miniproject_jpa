@@ -43,7 +43,7 @@ public class PageResponseDTO {
         this.searchType = searchType;
         this.keyword = keyword;
 
-        this.link = link
+        this.link = link;
 
         this.total = total;
         this.page = pageRequestDTO.getPage();
