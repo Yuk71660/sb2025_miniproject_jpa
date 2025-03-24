@@ -21,4 +21,7 @@ abstract public class BaseEntity {
     @LastModifiedDate
     private LocalDateTime modDate;
 
+    protected void setModDate(LocalDateTime modDate) {
+        this.modDate = modDate;
+    }
 }

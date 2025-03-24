@@ -1,9 +1,11 @@
 package com.moonya.sb2025_miniproject_jpa.service;
 
 import com.moonya.sb2025_miniproject_jpa.domain.Board;
+import com.moonya.sb2025_miniproject_jpa.domain.BoardReadLog;
 import com.moonya.sb2025_miniproject_jpa.dto.BoardDTO;
 import com.moonya.sb2025_miniproject_jpa.dto.PageRequestDTO;
 import com.moonya.sb2025_miniproject_jpa.dto.PageResponseDTO;
+import com.moonya.sb2025_miniproject_jpa.repository.BoardReadLogRepository;
 import com.moonya.sb2025_miniproject_jpa.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -12,10 +14,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +26,7 @@ public class BoardServiceImpl implements BoardService {
 
     private final ModelMapper modelMapper;
     private final BoardRepository boardRepository;
+    private final BoardReadLogRepository boardReadLogRepository;
 
     @Override
     public Long registerBoard(BoardDTO boardDTO) {
@@ -41,14 +44,32 @@ public class BoardServiceImpl implements BoardService {
         Optional<Board> result = boardRepository.findById(bno);
         Board board = result.orElseThrow();
 
-        readCountProcess(bno, ipAddr);
+        readCountProcess(bno, ipAddr, board);
 
         BoardDTO dto = modelMapper.map(board, BoardDTO.class);
         return dto;
     }
 
-    private void readCountProcess(Long bno, String ipAddr) {
-        
+    private void readCountProcess(Long bno, String ipAddr, Board board) {
+        Optional<BoardReadLog> result = boardReadLogRepository.findByBnoAndIpAddr(bno, ipAddr);
+        BoardReadLog beforeReadLog = null;
+        if (result.isPresent()){
+            beforeReadLog = result.get();
+
+            if (beforeReadLog.checkOneDay()) {
+                board.setReadCount();
+                beforeReadLog.setModDate();
+                boardReadLogRepository.save(beforeReadLog);
+            }
+
+        } else {
+            board.setReadCount();
+            BoardReadLog newReadLog = BoardReadLog.builder()
+                    .ipAddr(ipAddr)
+                    .bno(bno)
+                    .build();
+            boardReadLogRepository.save(newReadLog);
+        }
     }
 
     @Override

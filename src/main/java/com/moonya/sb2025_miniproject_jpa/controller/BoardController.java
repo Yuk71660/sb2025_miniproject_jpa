@@ -52,13 +52,26 @@ public class BoardController {
         return "redirect:/board/list";
     }
 
-    @GetMapping("/read")
-    public void readBoard(Long bno, PageRequestDTO pageRequestDTO, Model model, HttpServletRequest request) {
+    @GetMapping({"/read","/modify"})
+    public String readBoard(Long bno, PageRequestDTO pageRequestDTO, Model model, HttpServletRequest request) {
         log.info(bno);
 
         String ipAddr = GetClientIPAddr.getClientIp(request);
 
         model.addAttribute("dto", boardService.readOne(bno, ipAddr));
+        model.addAttribute("pageRequestDTO", pageRequestDTO);
+
+        String returnPage = "/board/read";
+        if(request.getRequestURI().contains("modify")) {
+            returnPage = "/board/modify";
+        }
+        return returnPage;
+    }
+
+    @GetMapping("/remove")
+    public String remove(Long bno) {
+        boardService.removeBoard(bno);
+        return "redirect:/board/list";
     }
 
 }
