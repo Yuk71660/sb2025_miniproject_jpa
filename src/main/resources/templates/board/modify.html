@@ -6,7 +6,7 @@
 
         <h1>게시글 수정 페이지</h1>
 
-        <form class="mt-4">
+        <form class="mt-4" action="/board/modify" method="post">
             <div class="mb-3">
                 <label for="bno" class="form-label">글 번호</label>
                 <input type="text" class="form-control" id="bno" name="bno" th:value="${dto.bno}" readonly>
@@ -19,7 +19,7 @@
 
             <div class="mb-3">
                 <label for="writer" class="form-label">작성자</label>
-                <input type="text" class="form-control" id="writer" name="writer" th:value="${dto.writer}" readonly>
+                <input type="text" class="form-control" id="writer" th:value="${dto.writer}" readonly>
             </div>
 
             <div class="mb-3">
@@ -29,7 +29,7 @@
 
             <div class="mb-3">
                 <label for="readCount" class="form-label">조회수</label>
-                <input type="text" class="form-control" id="readCount" name="readCount" th:value="${dto.readCount}" readonly>
+                <input type="text" class="form-control" id="readCount" th:value="${dto.readCount}" readonly>
             </div>
 
             <div class="mb-3">
@@ -42,7 +42,10 @@
                 <input type="text" class="form-control" id="modDate" th:value="${#temporals.format(dto.modDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
             </div>
 
-
+            <div class="d-flex justify-content-end mt-4 mb-3">
+                <button type="submit" class="btn btn-primary me-2">수정 적용</button>
+                <button type="button" class="btn btn-secondary" onclick="location.href='/board/read?bno=[[${dto.bno}]]'">수정 취소</button>
+            </div>
 
         </form>
 

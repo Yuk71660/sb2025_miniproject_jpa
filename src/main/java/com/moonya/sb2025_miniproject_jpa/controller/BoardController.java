@@ -52,7 +52,7 @@ public class BoardController {
         return "redirect:/board/list";
     }
 
-    @GetMapping({"/read","/modify"})
+    @GetMapping({ "/read", "/modify" })
     public String readBoard(Long bno, PageRequestDTO pageRequestDTO, Model model, HttpServletRequest request) {
         log.info(bno);
 
@@ -62,7 +62,7 @@ public class BoardController {
         model.addAttribute("pageRequestDTO", pageRequestDTO);
 
         String returnPage = "/board/read";
-        if(request.getRequestURI().contains("modify")) {
+        if (request.getRequestURI().contains("modify")) {
             returnPage = "/board/modify";
         }
         return returnPage;
@@ -72,6 +72,14 @@ public class BoardController {
     public String remove(Long bno) {
         boardService.removeBoard(bno);
         return "redirect:/board/list";
+    }
+
+    @PostMapping("/modify")
+    public String modifyBoard(BoardDTO boardDTO) {
+        boardService.modifyBoard(boardDTO);
+        System.out.println("수정 완료" + boardDTO);
+        return "redirect:/board/read?bno=" + boardDTO.getBno();
+
     }
 
 }
