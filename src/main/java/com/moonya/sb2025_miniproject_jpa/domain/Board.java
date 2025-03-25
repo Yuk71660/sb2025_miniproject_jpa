@@ -3,6 +3,8 @@ package com.moonya.sb2025_miniproject_jpa.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 // 엔티티 클래스에 setter쓰면 죄다 db에 업데이트 날리니까 @쓰지말고 필요한거만 직접 만들자
 @Entity // 아래의 클래스가 db의 테이블로 매핑
 @Getter
@@ -33,6 +35,6 @@ public class Board extends BaseEntity {
     }
 
     public void setReadCount() {
-        this.readCount = this.readCount + 1;
+        this.readCount = this.readCount + 1l;
     }
 }
