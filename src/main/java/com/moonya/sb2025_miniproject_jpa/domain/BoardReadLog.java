@@ -14,7 +14,7 @@ import java.time.Duration;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
+@ToString(exclude = "board")
 public class BoardReadLog extends BaseEntity {
 
     @Id // 아래 필드를 pk로 지정
@@ -23,7 +23,8 @@ public class BoardReadLog extends BaseEntity {
 
     private String ipAddr;
 
-    private Long bno;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Board board;
 
     public boolean checkOneDay() {
         Instant before = this.getModDate().toInstant(ZoneOffset.UTC);

@@ -3,6 +3,7 @@ package com.moonya.sb2025_miniproject_jpa.service;
 import com.moonya.sb2025_miniproject_jpa.domain.Board;
 import com.moonya.sb2025_miniproject_jpa.domain.BoardReadLog;
 import com.moonya.sb2025_miniproject_jpa.dto.BoardDTO;
+import com.moonya.sb2025_miniproject_jpa.dto.BoardReplyCountDTO;
 import com.moonya.sb2025_miniproject_jpa.dto.PageRequestDTO;
 import com.moonya.sb2025_miniproject_jpa.dto.PageResponseDTO;
 import com.moonya.sb2025_miniproject_jpa.repository.BoardReadLogRepository;
@@ -66,7 +67,7 @@ public class BoardServiceImpl implements BoardService {
             board.setReadCount();
             BoardReadLog newReadLog = BoardReadLog.builder()
                     .ipAddr(ipAddr)
-                    .bno(bno)
+                    .board(Board.builder().bno(bno).build())
                     .build();
             boardReadLogRepository.save(newReadLog);
         }
@@ -97,7 +98,8 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public PageResponseDTO list(PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO<BoardDTO> list(PageRequestDTO pageRequestDTO) {
+
         String[] searchTypes = pageRequestDTO.getSearchTypes();
         String keyword = pageRequestDTO.getKeyword();
         Pageable pageable = pageRequestDTO.getPageable("bno");
@@ -109,14 +111,24 @@ public class BoardServiceImpl implements BoardService {
                 .toList();
 
 
-        return PageResponseDTO.withAll()
-                .pageRequestDTO(pageRequestDTO)
-                .dtoList(dtoList)
-                .link(pageRequestDTO.getLink())
-                .searchType(pageRequestDTO.getSearchType())
-                .keyword(pageRequestDTO.getKeyword())
-                .total((int) result.getTotalElements())
-                .build();
+        return new PageResponseDTO<BoardDTO>(pageRequestDTO, dtoList, (int)result.getTotalElements(),
+                pageRequestDTO.getSearchType(), pageRequestDTO.getKeyword(), pageRequestDTO.getLink());
+    }
+
+    @Override
+    public PageResponseDTO<BoardReplyCountDTO> listWithReplyCount(PageRequestDTO pageRequestDTO) {
+
+        String[] searchTypes = pageRequestDTO.getSearchTypes();
+        String keyword = pageRequestDTO.getKeyword();
+        Pageable pageable = pageRequestDTO.getPageable("bno");
+
+        Page<BoardReplyCountDTO> result = boardRepository.searchWithReplyCount(searchTypes, keyword, pageable);
+
+        List<BoardReplyCountDTO> dtoList = result.getContent();
+
+
+        return new PageResponseDTO<BoardReplyCountDTO>(pageRequestDTO, dtoList, (int)result.getTotalElements(),
+                pageRequestDTO.getSearchType(), pageRequestDTO.getKeyword(), pageRequestDTO.getLink());
     }
 
 

@@ -1,6 +1,7 @@
 package com.moonya.sb2025_miniproject_jpa.repository;
 
 import com.moonya.sb2025_miniproject_jpa.domain.Board;
+import com.moonya.sb2025_miniproject_jpa.dto.BoardReplyCountDTO;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
@@ -190,6 +191,16 @@ public class BoardRepositoryTests {
         String[] searchTypes = {"t", "w", "c"};
         String keyword = "e";
         Page<Board> result = boardRepository.searchAll(searchTypes, keyword, PageRequest.of(0,3));
+
+        result.getContent().forEach(board -> log.info(board));
+    }
+
+    @Test
+    public void testSear() {
+        String[] searchTypes = {"t"};
+        String keyword = "e";
+        Page<BoardReplyCountDTO> result = boardRepository.searchWithReplyCount(searchTypes, keyword,
+                PageRequest.of(0,10, Sort.by("bno").descending()));
 
         result.getContent().forEach(board -> log.info(board));
     }

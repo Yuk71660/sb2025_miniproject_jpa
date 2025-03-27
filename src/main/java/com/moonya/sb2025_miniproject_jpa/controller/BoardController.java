@@ -28,7 +28,7 @@ public class BoardController {
 
     @GetMapping("/list")
     public void list(Model model, PageRequestDTO pageRequestDTO) {
-        model.addAttribute("pageResponseDTO", boardService.list(pageRequestDTO));
+        model.addAttribute("pageResponseDTO", boardService.listWithReplyCount(pageRequestDTO));
     }
 
     @GetMapping("/showRegisterForm")

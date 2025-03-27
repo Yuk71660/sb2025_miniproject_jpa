@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
 @Getter
 @Setter
 @ToString
-public class PageResponseDTO {
+public class PageResponseDTO<T> {
     private int page; // 현재 페이지 번호
     private int size; // 1페이지당 출력할 갯수
     private int total; // 전체 row 갯수
@@ -29,12 +29,12 @@ public class PageResponseDTO {
     private String searchType;
     private String keyword;
 
-    private List<BoardDTO> dtoList; // 페이징된 데이터
+    private List<T> dtoList; // 페이징된 데이터
 
     private List<Integer> pageNationList = new ArrayList<>();
 
-    @Builder(builderMethodName = "withAll")
-    public PageResponseDTO(PageRequestDTO pageRequestDTO, List<BoardDTO> dtoList, int total, String searchType, String keyword, String link) {
+//    @Builder(builderMethodName = "withAll")
+    public PageResponseDTO(PageRequestDTO pageRequestDTO, List<T> dtoList, int total, String searchType, String keyword, String link) {
         if (total <= 0) {
             this.dtoList = List.of();
             this.pageNationList = List.of();
