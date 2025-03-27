@@ -1,5 +1,7 @@
 package com.moonya.sb2025_miniproject_jpa.service;
 
+import com.moonya.sb2025_miniproject_jpa.dto.PageRequestDTO;
+import com.moonya.sb2025_miniproject_jpa.dto.PageResponseDTO;
 import com.moonya.sb2025_miniproject_jpa.dto.ReplyDTO;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
@@ -21,5 +23,16 @@ public class ReplyServiceTests {
                 .build();
 
         log.info(replyService.registReply(replyDTO));
+    }
+
+    @Test
+    public void testGetReplies() {
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
+                .page(1)
+                .size(10)
+                .build();
+
+        PageResponseDTO<ReplyDTO> pageResponseDTO = replyService.getReplies(100L, pageRequestDTO);
+        pageResponseDTO.getDtoList().forEach(boardDTO -> log.info(boardDTO));
     }
 }
