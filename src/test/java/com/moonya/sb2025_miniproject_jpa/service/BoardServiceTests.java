@@ -77,4 +77,16 @@ public class BoardServiceTests {
         PageResponseDTO pageResponseDTO = boardService.list(pageRequestDTO);
         pageResponseDTO.getDtoList().forEach(boardDTO -> log.info(boardDTO));
     }
+
+    @Test
+    public void testListWithReplyCount(){
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
+                .page(1)
+                .size(10)
+                .searchType("t")
+                .keyword("3")
+                .build();
+        PageResponseDTO pageResponseDTO = boardService.listWithReplyCount(pageRequestDTO);
+        pageResponseDTO.getDtoList().forEach(boardDTO -> log.info(boardDTO));
+    }
 }
