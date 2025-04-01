@@ -1,17 +1,23 @@
 package com.moonya.sb2025_miniproject_jpa.service;
 
 import com.moonya.sb2025_miniproject_jpa.domain.Reply;
+import com.moonya.sb2025_miniproject_jpa.dto.PageRequestDTO;
+import com.moonya.sb2025_miniproject_jpa.dto.PageResponseDTO;
 import com.moonya.sb2025_miniproject_jpa.dto.ReplyDTO;
 import com.moonya.sb2025_miniproject_jpa.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class ReplyServiceImpl implements ReplyService{
+public class ReplyServiceImpl implements ReplyService {
     private final ReplyRepository replyRepository;
     private final ModelMapper modelMapper;
 
@@ -20,5 +26,24 @@ public class ReplyServiceImpl implements ReplyService{
         Reply reply = modelMapper.map(replyDTO, Reply.class);
         Long newRno = replyRepository.save(reply).getRno();
         return newRno;
+    }
+
+    @Override
+    public PageResponseDTO<ReplyDTO> getListOfBoard(Long bno, PageRequestDTO pageRequestDTO) {
+        List<ReplyDTO> replyDTOList = replyRepository.getListOfBoard(bno).stream()
+                .map(reply -> modelMapper.map(reply, ReplyDTO.class))
+                .collect(Collectors.toList());
+
+        int total = replyRepository.getListOfBoard(bno).size();
+
+        PageResponseDTO<ReplyDTO> pageResponseDTO = new PageResponseDTO<>(
+                pageRequestDTO,
+                replyDTOList,
+                total,
+                pageRequestDTO.getSearchType(),
+                pageRequestDTO.getKeyword(),
+                pageRequestDTO.getLink());
+
+        return pageResponseDTO;
     }
 }

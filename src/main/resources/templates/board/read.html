@@ -81,6 +81,15 @@
     </div>
 
 <script layout:fragment="scripts" th:inline="javascript">
+    const bno = [[${dto.bno}]];
+    const replyDTO = {
+        bno: bno,
+        page: 1,
+        size: 3
+    }
+
+    getReplies(replyDTO).then(json => console.log(json));
+
     // 모달 관련 공통 함수
     function handleModal(options) {
         const modal = document.querySelector('#errorModal');

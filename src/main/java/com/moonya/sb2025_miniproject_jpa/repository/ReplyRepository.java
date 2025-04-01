@@ -15,5 +15,8 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
     List<Reply> findByBoard(Board board);
 
     @Query("select r from Reply r where r.board.bno = :bno")
-    Page<Reply> replyListOfBoard(@Param("bno")Long bno, Pageable pageable);
+    Page<Reply> replyListOfBoard(@Param("bno") Long bno, Pageable pageable);
+
+    @Query("select r from Reply r where r.board.bno = :bno and r.rno > 0 order by r.rno asc")
+    List<Reply> getListOfBoard(@Param("bno") Long bno);
 }
