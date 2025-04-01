@@ -8,4 +8,8 @@ public interface ReplyService {
     Long registReply(ReplyDTO replyDTO);
 
     PageResponseDTO<ReplyDTO> getListOfBoard(Long bno, PageRequestDTO pageRequestDTO);
+
+    void updateReply(Long rno, String replyText);
+
+    void removeReply(Long rno);
 }

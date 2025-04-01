@@ -43,7 +43,7 @@ public class ReplyController {
         return ResponseEntity.ok().body(resultMap);
     }
 
-    @Operation(summary = "re get", description = "get", method = "GET")
+    @Operation(summary = "replies get", description = "get방식으로 댓글 목록 조회", method = "GET")
     @GetMapping(value = "/list/{bno}")
     public PageResponseDTO<ReplyDTO> getList(@PathVariable("bno") Long bno, PageRequestDTO pageRequestDTO) {
         log.info("bno : {}", bno);
@@ -52,6 +52,20 @@ public class ReplyController {
         log.info("pageResponseDTO : {}", pageResponseDTO);
 
         return pageResponseDTO;
+    }
+
+    @Operation(summary = "Replies DELETE", description = "DELETE방식으로 댓글 삭제", method = "DELETE")
+    @DeleteMapping("/{rno}")
+    public void removeReply(@PathVariable("rno") Long rno) {
+        replyService.removeReply(rno);
+    }
+
+    @Operation(summary = "Replies PUT", description = "PUT방식으로 댓글 수정", method = "PUT")
+    @PutMapping("/{rno}")
+    public void modifyReply(@PathVariable("rno") Long rno, @RequestBody String replyText) {
+        log.info("rno : {}", rno);
+        log.info("replyText : {}", replyText);
+        replyService.updateReply(rno, replyText);
     }
 
 }
