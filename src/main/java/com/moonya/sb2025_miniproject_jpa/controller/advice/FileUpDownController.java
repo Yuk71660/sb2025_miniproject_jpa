@@ -12,19 +12,14 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 @RestController
@@ -77,7 +72,7 @@ public class FileUpDownController {
 
     @Operation(summary = "view 파일", description = "Get방식으로 첨부 파일 조회")
     @GetMapping("view/{fileName}")
-    public ResponseEntity<Resource> viewFileGET(@PathVariable("fileName") String fileName) {
+    public ResponseEntity<Resource> viewFileGET(@PathVariable String fileName) {
         Resource resource = new FileSystemResource(uploadPath + File.separator + fileName);
 
         String resourceName = resource.getFilename();
@@ -90,5 +85,34 @@ public class FileUpDownController {
             return ResponseEntity.internalServerError().build();
         }
         return ResponseEntity.ok().headers(headers).body(resource);
+    }
+
+    @Operation(summary = "remove 파일", description = "delete방식으로 업로드 된 파일 삭제")
+    @DeleteMapping("/remove/{fileName}")
+    public Map<String, Boolean> removeFile(@PathVariable String fileName) {
+        Map<String, Boolean> resultMap = new HashMap<>();
+
+        boolean isRemove = false;
+        Resource resource = new FileSystemResource(uploadPath + File.separator + fileName);
+
+        try {
+            isRemove = resource.getFile().delete();
+
+            if (Files.probeContentType(resource.getFile().toPath()).startsWith("image")){
+                File thumbFile = new File(uploadPath + File.separator + "s_" + fileName);
+                thumbFile.delete();
+            };
+        } catch (SecurityException s) {
+            log.error(s.getMessage());
+
+            resultMap.put("isRemove", isRemove);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+
+            resultMap.put("isRemove", isRemove);
+        }
+        resultMap.put("isRemove", isRemove);
+
+        return  resultMap;
     }
 }
