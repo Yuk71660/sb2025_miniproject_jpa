@@ -229,4 +229,18 @@ public class BoardRepositoryTests {
 
         board.getFileSet().forEach(boardUpFile -> log.info(boardUpFile));
     }
+
+    @Test
+    @Transactional
+    public void testModd(){
+        Optional<Board> result = boardRepository.findByIdWithBoardUpFiles(1L);
+        Board board = result.orElseThrow();
+
+        board.clearAllFiles();
+
+        for (int i = 0; i<2; i++) {
+            board.addUpFile(UUID.randomUUID().toString(), "new" + 1 + ".jpg");
+        }
+        boardRepository.save(board);
+    }
 }

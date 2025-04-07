@@ -28,7 +28,7 @@ public class Board extends BaseEntity {
     @Builder.Default
     private Long readCount = 0L;
 
-    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<BoardUpFile> fileSet = new HashSet<>();
 
