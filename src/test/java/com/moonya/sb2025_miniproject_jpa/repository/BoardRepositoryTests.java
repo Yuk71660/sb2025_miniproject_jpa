@@ -16,6 +16,7 @@ import org.springframework.test.annotation.Commit;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.IntStream;
 
 @SpringBootTest
@@ -203,5 +204,29 @@ public class BoardRepositoryTests {
                 PageRequest.of(0,10, Sort.by("bno").descending()));
 
         result.getContent().forEach(board -> log.info(board));
+    }
+
+    @Test
+    public void testInsertttt() {
+        Board board = Board.builder()
+                .title("file upload test2")
+                .content("test2")
+                .writer("tester2")
+                .build();
+
+        board.addUpFile(UUID.randomUUID().toString(), "a" + ".jpg");
+
+        boardRepository.save(board);
+    }
+
+    @Transactional
+    @Test
+    public void testResdaffa(){
+        Optional<Board> result = boardRepository.findByIdWithBoardUpFiles(1L);
+        Board board = result.orElseThrow();
+
+        log.info("board : {}", board);
+
+        board.getFileSet().forEach(boardUpFile -> log.info(boardUpFile));
     }
 }

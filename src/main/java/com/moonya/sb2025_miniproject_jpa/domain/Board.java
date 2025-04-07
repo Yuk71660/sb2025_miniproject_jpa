@@ -43,4 +43,20 @@ public class Board extends BaseEntity {
     public void setReadCount() {
         this.readCount = this.readCount + 1l;
     }
+
+    public void addUpFile(String uuid, String originalFileName) {
+        BoardUpFile boardUpFile = BoardUpFile.builder()
+                .uuid(uuid)
+                .originalFileName(originalFileName)
+                .board(this)
+                .ord(this.fileSet.size())
+                .build();
+        this.fileSet.add(boardUpFile);
+    }
+
+    public void clearAllFiles() {
+
+        this.fileSet.forEach(boardUpFile -> boardUpFile.setBoard(null));
+        this.fileSet.clear();
+    }
 }

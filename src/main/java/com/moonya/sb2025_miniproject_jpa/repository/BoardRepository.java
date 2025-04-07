@@ -5,12 +5,14 @@ import com.moonya.sb2025_miniproject_jpa.domain.Board;
 import com.moonya.sb2025_miniproject_jpa.repository.search.BoardSearch;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BoardRepository extends JpaRepository<Board, Long>, BoardSearch {
     // JpaRepository 에 선언된 메서드들 상속 받아서 여쯤 어디에 있는 느낌
@@ -42,4 +44,7 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardSearch
 
     // 3. 동적 쿼리문 작성할 때, 위에 쿼리문 쓰는 것들은 써먹기도 힘들고 오타찾기도 힘들어서 쿼리dsl쓴다
 
+    @EntityGraph(attributePaths = {"fileSet"})
+    @Query("select b from Board b where b.bno=:bno")
+    Optional<Board> findByIdWithBoardUpFiles(Long bno);
 }
