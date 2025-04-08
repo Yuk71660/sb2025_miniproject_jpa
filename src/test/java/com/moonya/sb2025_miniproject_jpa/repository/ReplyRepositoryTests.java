@@ -25,7 +25,7 @@ public class ReplyRepositoryTests {
 
     @Test
     public void testInsertReply() {
-        Board board = boardRepository.findById(100l).get();
+        Board board = boardRepository.findById(1l).get();
 
         Reply reply = Reply.builder()
                 .board(board)
@@ -52,7 +52,7 @@ public class ReplyRepositoryTests {
 
     @Test
     public void testReplyListOfBoard() {
-        Long bno = 100L;
+        Long bno = 1L;
 
         Pageable pageable = PageRequest.of(0,4, Sort.by("rno").descending());
 
