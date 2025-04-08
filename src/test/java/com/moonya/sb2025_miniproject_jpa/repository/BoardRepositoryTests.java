@@ -1,6 +1,7 @@
 package com.moonya.sb2025_miniproject_jpa.repository;
 
 import com.moonya.sb2025_miniproject_jpa.domain.Board;
+import com.moonya.sb2025_miniproject_jpa.dto.BoardListAllDTO;
 import com.moonya.sb2025_miniproject_jpa.dto.BoardReplyCountDTO;
 import com.moonya.sb2025_miniproject_jpa.dto.PageRequestDTO;
 import jakarta.persistence.EntityManager;
@@ -283,5 +284,14 @@ public class BoardRepositoryTests {
     @Transactional
     public void testNAdd1_searchWithAll(){
         boardRepository.searchWithAll(null, null, PageRequest.of(0,10, Sort.by("bno").descending()));
+    }
+
+    @Test
+    @Transactional
+    public void testSearchWithAll() {
+         Page<BoardListAllDTO> boardListAllDTOPage =
+        boardRepository.searchWithAll(null, null, PageRequest.of(0,10, Sort.by("bno").descending()));
+
+         boardListAllDTOPage.getContent().forEach(boardListAllDTO -> log.info(boardListAllDTO));
     }
 }

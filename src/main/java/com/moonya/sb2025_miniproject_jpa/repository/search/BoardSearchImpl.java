@@ -1,10 +1,14 @@
 package com.moonya.sb2025_miniproject_jpa.repository.search;
 
 import com.moonya.sb2025_miniproject_jpa.domain.Board;
+import com.moonya.sb2025_miniproject_jpa.domain.BoardUpFile;
 import com.moonya.sb2025_miniproject_jpa.domain.QBoard;
 import com.moonya.sb2025_miniproject_jpa.domain.QReply;
+import com.moonya.sb2025_miniproject_jpa.dto.BoardListAllDTO;
 import com.moonya.sb2025_miniproject_jpa.dto.BoardReplyCountDTO;
+import com.moonya.sb2025_miniproject_jpa.dto.BoardUpFileDTO;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.springframework.data.domain.Page;
@@ -130,12 +134,13 @@ public class BoardSearchImpl extends QuerydslRepositorySupport implements BoardS
     }
 
     @Override
-    public Page<BoardReplyCountDTO> searchWithAll(String[] searchTypes, String keyword, Pageable pageable) {
+    public Page<BoardListAllDTO> searchWithAll(String[] searchTypes, String keyword, Pageable pageable) {
 
         QBoard board = QBoard.board; // Q도메인 객체
         QReply reply = QReply.reply; // left outer join
 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
+
 
         JPQLQuery<Board> query = from(board);
         query.leftJoin(reply).on(reply.board.eq(board));
@@ -157,36 +162,40 @@ public class BoardSearchImpl extends QuerydslRepositorySupport implements BoardS
             query.where(booleanBuilder);
         }
 
-//        JPQLQuery<BoardReplyCountDTO> dtoQuery = query.select(Projections.bean(BoardReplyCountDTO.class,
-//                board.bno,
-//                board.title,
-//                board.writer,
-//                board.readCount,
-//                board.regDate,
-//                reply.count().as("replyCount"))).groupBy(board.bno);;
-
-
-//        this.getQuerydsl().applyPagination(pageable, dtoQuery);
-
-//        List<BoardReplyCountDTO> dtoList = dtoQuery.fetch();
-
-//        long count = dtoQuery.fetchCount();
-//
-//        return new PageImpl<>(dtoList, pageable, count);
-
         this.getQuerydsl().applyPagination(pageable, query);
 
-        List<Board> boardList = query.fetch();
-        boardList.forEach(board1 -> {
-            System.out.println("Bno : " + board1.getBno());
-            System.out.println("FileSet : ");
+        query.groupBy(board);
+        JPQLQuery<Tuple> tupleJPQLQuery = query.select(board, reply.countDistinct());
+        List<Tuple> tupleList = tupleJPQLQuery.fetch();
 
-            board1.getFileSet().forEach(boardUpFile -> System.out.println(boardUpFile));
+        // 게시글 + 댓글 수 + 첨부파일들
+        List<BoardListAllDTO> boardListAllDTOList = tupleList.stream().map( tuple -> {
+            Board singleBoard = tuple.get(board);
+            Long cnt = tuple.get(1, Long.class);
 
-            System.out.println("---------------------------------------------------------");
-        });
+            List<BoardUpFileDTO> boardUpFileDTOList = singleBoard.getFileSet().stream().map(boardUpFile -> {
+                BoardUpFileDTO boardUpFileDTO = BoardUpFileDTO.builder()
+                        .uuid(boardUpFile.getUuid())
+                        .originalFileName(boardUpFile.getOriginalFileName())
+                        .ord(boardUpFile.getOrd())
+                        .build();
+                return boardUpFileDTO;
+            }).toList();
 
-        return null;
+            BoardListAllDTO boardListAllDTO = BoardListAllDTO.builder()
+                    .bno(singleBoard.getBno())
+                    .title(singleBoard.getTitle())
+                    .writer(singleBoard.getWriter())
+                    .replyCount(cnt)
+                    .regDate(singleBoard.getRegDate())
+                    .readCount(singleBoard.getReadCount())
+                    .boardUpFileDTOList(boardUpFileDTOList)
+                    .build();
+
+            return boardListAllDTO;
+        }).toList();
+
+        return new PageImpl<>(boardListAllDTOList, pageable, query.fetchCount());
     }
 
 }
