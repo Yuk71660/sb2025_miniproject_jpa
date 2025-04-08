@@ -2,6 +2,7 @@ package com.moonya.sb2025_miniproject_jpa.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -32,6 +33,7 @@ public class Board extends BaseEntity {
     // 상위 엔티티에서 하위 엔티티의 행동을 관리한다.
     @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @BatchSize(size = 20)
     private Set<BoardUpFile> fileSet = new HashSet<>();
 
     public void setTitle(String title) {

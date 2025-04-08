@@ -7,6 +7,8 @@ import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 @SpringBootTest
 @Log4j2
@@ -89,4 +91,6 @@ public class BoardServiceTests {
         PageResponseDTO pageResponseDTO = boardService.listWithReplyCount(pageRequestDTO);
         pageResponseDTO.getDtoList().forEach(boardDTO -> log.info(boardDTO));
     }
+
+
 }

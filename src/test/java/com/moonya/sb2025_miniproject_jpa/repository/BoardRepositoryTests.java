@@ -2,6 +2,7 @@ package com.moonya.sb2025_miniproject_jpa.repository;
 
 import com.moonya.sb2025_miniproject_jpa.domain.Board;
 import com.moonya.sb2025_miniproject_jpa.dto.BoardReplyCountDTO;
+import com.moonya.sb2025_miniproject_jpa.dto.PageRequestDTO;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
@@ -257,5 +258,30 @@ public class BoardRepositoryTests {
     public void testBoardUpFileByUUID() {
         Board board = boardRepository.findById(3L).orElseThrow();
         board.removeFile("293c4edc-5e80-44ff-a78d-6f70437b5f60");
+    }
+
+    @Test
+    public void testInsertAll() {
+         for (int i = 1; i <= 100; i++) {
+             Board board = Board.builder()
+                     .title("title..." + i)
+                     .content("content..." + i)
+                     .writer("writer..." + i)
+                     .build();
+             for (int j = 1; j <= 3; j++) {
+                 if (i % 5 == 0) {
+                     continue;
+                 }
+
+                 board.addUpFile(UUID.randomUUID().toString(),i+"TestFile"+j+".jpg");
+             }
+             boardRepository.save(board);
+         }
+    }
+
+    @Test
+    @Transactional
+    public void testNAdd1_searchWithAll(){
+        boardRepository.searchWithAll(null, null, PageRequest.of(0,10, Sort.by("bno").descending()));
     }
 }
