@@ -25,12 +25,15 @@ public class BoardRepositoryTests {
 
     @Autowired
     private BoardRepository boardRepository; // 테스트 유닛 에서는 보통 테스트 대상을 주입 받는다...
+    @Autowired
+    private ReplyRepository replyRepository;
 
 //    @Autowired
 //    private EntityManager em;
 
-    // @Test
+     @Test
     public void testInsert() {
+
         Board newBoard = Board.builder()
                 .title("insert test")
                 .writer("dooly")
@@ -94,13 +97,6 @@ public class BoardRepositoryTests {
         log.info(modifiedOldBoard);
     }
 
-    @Test
-    public void testDelete() {
-        Optional<Board> result = boardRepository.findById(3L);
-        if (result.isPresent()) {
-            boardRepository.deleteById(3L);
-        }
-    }
 
 //     @Test
     public void insertDummies() {
@@ -242,5 +238,24 @@ public class BoardRepositoryTests {
             board.addUpFile(UUID.randomUUID().toString(), "new" + 1 + ".jpg");
         }
         boardRepository.save(board);
+    }
+
+
+    @Test
+    @Transactional
+    @Commit
+    public void testDelete() {
+        Optional<Board> result = boardRepository.findById(1L);
+        if (result.isPresent()) {
+            replyRepository.deleteByBoard_Bno(1L);
+            boardRepository.deleteById(1L);
+        }
+    }
+
+    @Test
+    @Transactional
+    public void testBoardUpFileByUUID() {
+        Board board = boardRepository.findById(3L).orElseThrow();
+        board.removeFile("293c4edc-5e80-44ff-a78d-6f70437b5f60");
     }
 }

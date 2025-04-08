@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -28,6 +29,7 @@ public class Board extends BaseEntity {
     @Builder.Default
     private Long readCount = 0L;
 
+    // 상위 엔티티에서 하위 엔티티의 행동을 관리한다.
     @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<BoardUpFile> fileSet = new HashSet<>();
@@ -58,5 +60,18 @@ public class Board extends BaseEntity {
 
         this.fileSet.forEach(boardUpFile -> boardUpFile.setBoard(null));
         this.fileSet.clear();
+    }
+
+    // 파일의 이름을 받아 파일을 db에서 삭제하는 메서드
+    public void removeFile(String uuid) {
+//        Iterator<BoardUpFile> iterator = this.fileSet.iterator();
+//        while (iterator.hasNext()) {
+//            BoardUpFile value = iterator.next();
+//            if (value.getUuid().equals(uuid)){
+//                value.setBoard(null);
+//                iterator.remove();
+//            }
+//        }
+        this.fileSet.removeIf(boardUpFile -> boardUpFile.getUuid().equals(uuid));
     }
 }
