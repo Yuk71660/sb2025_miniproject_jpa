@@ -64,7 +64,7 @@
     </div>
 
     <!-- 첨부파일 Modal -->
-    <div class="modal uploadModal" tabindex="-1">
+    <div class="modal uploadModal" tabindex="-1" id="uploadModal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -73,10 +73,10 @@
                 </div>
                 <div class="modal-body">
                     <div class="input-group mb-3">
-                        <input type="file" name="files" class="form-control" multiple />
+                        <input type="file" name="files" class="form-control uploadTag" multiple />
                         <!-- 첨부파일 업롣드 프로그레스 바 -->
                         <div class="progress w-100 mt-2" style="height: 20px;">
-                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 50%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">50%</div>
                         </div>
                     </div>
                 </div>
@@ -87,7 +87,7 @@
             </div>
         </div>
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </div>
 
 <script layout:fragment="scripts" th:inline="javascript">
@@ -106,8 +106,91 @@
     const closeModal = document.querySelector(".close");
     closeModal.addEventListener("click", function () {
         document.getElementById("errorModal").style.display = "none";
+        document.getElementById("uploadModal").style.display = "none";
     });
 
+    const uploadModal = new bootstrap.Modal(document.querySelector(".uploadModal"))
+
+    document.querySelector(".uploadFileBtn").addEventListener("click",function (e){
+        e.preventDefault();
+        e.stopPropagation();
+        uploadModal.show();
+    })
+
+    document.querySelectorAll(".closeUploadBtn").forEach((element)=>{
+        element.addEventListener("click",function (e){
+            e.preventDefault();
+            e.stopPropagation();
+            uploadModal.hide();
+
+            document.querySelector(".uploadTag").value = "";
+
+            document.querySelector(".progress-bar").style.width = '0%';
+            document.querySelector(".progress-bar").innerText = '0%';
+
+            const progressbarContainer = document.querySelector(".uploadModal .modal-body > div:last-child");
+            if(progressbarContainer) {
+                progressbarContainer.remove();
+            }
+        })
+    })
+
+    document.querySelector(".uploadBtn").addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const formData = new FormData();
+        const files = document.querySelector(".uploadModal input[name='files']").files;
+        console.log(files);
+
+        const maxFileSize = 1024 * 1024 * 10;
+
+        for(let file of files) {
+            if (file.size > maxFileSize) {
+                alert(`${file.name}의 크기가 10mb를 초과합니다.`)
+                document.querySelector(".uploadTag").value = "";
+            } else {
+                formData.append('files', file);
+            }
+        }
+
+        // 파일 진행 상태를 표시할 프로그레스바 컨테이너 생성
+        const progressbarContainer = document.createElement('div')
+        document.querySelector('.uploadModal .modal-body').appendChild(progressbarContainer)
+
+        for (let file of files) {
+            // 파일별 진행바 생성
+            const fileProgress = document.createElement('div');
+            fileProgress.className = 'mb-2';
+            fileProgress.innerHTML = `
+                <div class="small mb-1">${file.name.length > 7 ? file.name.substring(0,7) + '...' : file.name}<span class="uploadPercent"></span></div>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                </div>
+            `;
+            progressbarContainer.appendChild(fileProgress);
+
+            const progressBar = fileProgress.querySelector(".progress-bar");
+
+            const singleFormData = new FormData();
+            singleFormData.append('files', file);
+
+            axios({
+                method: 'post',
+                url: '/upload',
+                data: singleFormData,
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                onUploadProgress: function (progressEvent) {
+                    console.log(progressEvent)
+                    const percentCompleted = Math.round((progressEvent.loaded / progressEvent.total)*100);
+                    progressBar.style.width = percentCompleted + '%';
+                    progressBar.innerText = percentCompleted + '%';
+                }
+            })
+        }
+    })
 </script>
 
 </html>
