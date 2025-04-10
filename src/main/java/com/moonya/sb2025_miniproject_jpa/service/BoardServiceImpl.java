@@ -31,8 +31,9 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Long registerBoard(BoardDTO boardDTO) {
+        boardDTO.setReadCount(0L);
+        Board board = dtoToEntity(boardDTO);
 
-        Board board = modelMapper.map(boardDTO, Board.class);
         log.info("board : {}", board);
         boardRepository.save(board);
 
