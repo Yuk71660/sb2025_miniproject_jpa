@@ -40,6 +40,7 @@ public class BoardController {
     @PostMapping("/register")
     public String register(@Valid BoardDTO boardDTO, BindingResult bindingResult,
             RedirectAttributes redirectAttributes) {
+        log.info(boardDTO);
         if (bindingResult.hasErrors()) {
             log.info("유효성 검사 실패");
             log.info(bindingResult.getAllErrors());

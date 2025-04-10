@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -28,4 +29,6 @@ public class BoardDTO {
     private LocalDateTime regDate;
 
     private LocalDateTime modDate;
+
+    private List<String> fileNames;
 }
