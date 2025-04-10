@@ -3,8 +3,6 @@ package com.moonya.sb2025_miniproject_jpa.repository;
 import com.moonya.sb2025_miniproject_jpa.domain.Board;
 import com.moonya.sb2025_miniproject_jpa.dto.BoardListAllDTO;
 import com.moonya.sb2025_miniproject_jpa.dto.BoardReplyCountDTO;
-import com.moonya.sb2025_miniproject_jpa.dto.PageRequestDTO;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
@@ -212,7 +210,7 @@ public class BoardRepositoryTests {
                 .writer("tester2")
                 .build();
 
-        board.addUpFile(UUID.randomUUID().toString(), "a" + ".jpg");
+        board.addUpFile(UUID.randomUUID().toString(), "a" + ".jpg", true);
 
         boardRepository.save(board);
     }
@@ -237,7 +235,7 @@ public class BoardRepositoryTests {
         board.clearAllFiles();
 
         for (int i = 0; i<2; i++) {
-            board.addUpFile(UUID.randomUUID().toString(), "new" + 1 + ".jpg");
+            board.addUpFile(UUID.randomUUID().toString(), "new" + 1 + ".jpg", true);
         }
         boardRepository.save(board);
     }
@@ -274,7 +272,7 @@ public class BoardRepositoryTests {
                      continue;
                  }
 
-                 board.addUpFile(UUID.randomUUID().toString(),i+"TestFile"+j+".jpg");
+                 board.addUpFile(UUID.randomUUID().toString(),i+"TestFile"+j+".jpg", true);
              }
              boardRepository.save(board);
          }

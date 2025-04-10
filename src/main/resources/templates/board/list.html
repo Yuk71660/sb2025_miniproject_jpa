@@ -41,7 +41,18 @@
             <tbody th:with="link=${pageResponseDTO.link}">
             <tr th:each="board:${pageResponseDTO.dtoList}">
                 <td>[[${board.bno}]]</td>
-                <td style="flex:1;"><a th:href="|@{/board/read(bno=${board.bno})}&${link}|">[[${board.title}]]...<span class="badge rounded-pill bg-warning">[[${board.replyCount}]]</span></a></td>
+                <td style="flex:1;"><a th:href="|@{/board/read(bno=${board.bno})}&${link}|">[[${board.title}]]...<span class="badge rounded-pill bg-warning">[[${board.replyCount}]]</span>
+
+                    <div th:if="${board.boardUpFileDTOList != null and board.boardUpFileDTOList.size() > 0}">
+
+                    <th:block th:each="file:${board.boardUpFileDTOList}">
+                        <img style="width:50px; height:50px;" th:if="${file.img == true}"
+                             th:src="|\view/s_${file.uuid}_${file.originalFileName}|">
+                        <img style="width:50px; height:50px;" th:if="${file.img != true}"
+                             th:src="|\view|">
+                    </th:block>
+                </div>
+                </a></td>
                 <td>[[${board.writer}]]</td>
                 <td>[[${board.readCount}]]</td>
                 <td>[[${#temporals.format(board.regDate,"yyyy-MM-dd")}]]</td>

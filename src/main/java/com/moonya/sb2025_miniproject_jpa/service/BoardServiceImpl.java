@@ -2,10 +2,7 @@ package com.moonya.sb2025_miniproject_jpa.service;
 
 import com.moonya.sb2025_miniproject_jpa.domain.Board;
 import com.moonya.sb2025_miniproject_jpa.domain.BoardReadLog;
-import com.moonya.sb2025_miniproject_jpa.dto.BoardDTO;
-import com.moonya.sb2025_miniproject_jpa.dto.BoardReplyCountDTO;
-import com.moonya.sb2025_miniproject_jpa.dto.PageRequestDTO;
-import com.moonya.sb2025_miniproject_jpa.dto.PageResponseDTO;
+import com.moonya.sb2025_miniproject_jpa.dto.*;
 import com.moonya.sb2025_miniproject_jpa.repository.BoardReadLogRepository;
 import com.moonya.sb2025_miniproject_jpa.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
@@ -130,6 +127,25 @@ public class BoardServiceImpl implements BoardService {
 
         return new PageResponseDTO<BoardReplyCountDTO>(pageRequestDTO, dtoList, (int)result.getTotalElements(),
                 pageRequestDTO.getSearchType(), pageRequestDTO.getKeyword(), pageRequestDTO.getLink());
+    }
+
+    @Override
+    public PageResponseDTO<BoardListAllDTO> listAll(PageRequestDTO pageRequestDTO) {
+        String[] searchTypes = pageRequestDTO.getSearchTypes();
+        String keyword = pageRequestDTO.getKeyword();
+        Pageable pageable = pageRequestDTO.getPageable("bno");
+
+        Page<BoardListAllDTO> result = boardRepository.searchWithAll(searchTypes, keyword, pageable);
+
+        PageResponseDTO<BoardListAllDTO> res = new PageResponseDTO<>(
+                pageRequestDTO,
+                result.getContent(),
+                (int)result.getTotalElements(),
+                pageRequestDTO.getSearchType(),
+                pageRequestDTO.getKeyword(),
+                pageRequestDTO.getLink()
+                );
+        return res;
     }
 
 

@@ -28,10 +28,10 @@ public class BoardController {
 
     @GetMapping("/list")
     public void list(Model model, PageRequestDTO pageRequestDTO) {
-        model.addAttribute("pageResponseDTO", boardService.listWithReplyCount(pageRequestDTO));
+        model.addAttribute("pageResponseDTO", boardService.listAll(pageRequestDTO));
     }
 
-    @GetMapping("/showRegisterForm")
+    @GetMapping("/registerForm")
     public String registerForm() {
 
         return "board/registerForm";

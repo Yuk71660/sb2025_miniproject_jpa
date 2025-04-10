@@ -2,10 +2,7 @@ package com.moonya.sb2025_miniproject_jpa.service;
 
 import com.moonya.sb2025_miniproject_jpa.domain.Board;
 import com.moonya.sb2025_miniproject_jpa.domain.BoardUpFile;
-import com.moonya.sb2025_miniproject_jpa.dto.BoardDTO;
-import com.moonya.sb2025_miniproject_jpa.dto.BoardReplyCountDTO;
-import com.moonya.sb2025_miniproject_jpa.dto.PageRequestDTO;
-import com.moonya.sb2025_miniproject_jpa.dto.PageResponseDTO;
+import com.moonya.sb2025_miniproject_jpa.dto.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
@@ -26,6 +23,8 @@ public interface BoardService {
 
     PageResponseDTO<BoardReplyCountDTO> listWithReplyCount(PageRequestDTO pageRequestDTO);
 
+    PageResponseDTO<BoardListAllDTO> listAll(PageRequestDTO pageRequestDTO);
+
     // default 메서드 : 인터페이스에 구현부가 있는 메서드를 작성 가능
     default Board dtoToEntity(BoardDTO b) {
 
@@ -41,7 +40,22 @@ public interface BoardService {
                 // uuid(36자리) + _ + 원본이름
                 String uuid = fileName.substring(0,36) ;
                 String originalFileName = fileName.substring(37);
-                board.addUpFile(uuid, originalFileName);
+                String ext = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
+                Boolean img = false;
+                if (ext != null && (
+                        ext.equalsIgnoreCase("jpg") ||
+                                ext.equalsIgnoreCase("jpeg") ||
+                                ext.equalsIgnoreCase("png") ||
+                                ext.equalsIgnoreCase("gif") ||
+                                ext.equalsIgnoreCase("bmp") ||
+                                ext.equalsIgnoreCase("webp") ||
+                                ext.equalsIgnoreCase("tiff") ||
+                                ext.equalsIgnoreCase("svg")
+                )) {
+                    img = true;
+                    System.out.println("이미지 파일입니다.");
+                }
+                board.addUpFile(uuid, originalFileName, img);
             });
         }
 

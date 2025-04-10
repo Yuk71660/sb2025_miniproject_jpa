@@ -11,4 +11,6 @@ public class BoardUpFileDTO {
     private String uuid;
     private String originalFileName;
     private int ord;
+
+    private boolean img;
 }

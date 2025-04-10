@@ -178,6 +178,7 @@ public class BoardSearchImpl extends QuerydslRepositorySupport implements BoardS
                         .uuid(boardUpFile.getUuid())
                         .originalFileName(boardUpFile.getOriginalFileName())
                         .ord(boardUpFile.getOrd())
+                        .img(boardUpFile.isImg())
                         .build();
                 return boardUpFileDTO;
             }).toList();

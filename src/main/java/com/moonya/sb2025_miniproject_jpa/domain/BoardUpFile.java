@@ -3,6 +3,7 @@ package com.moonya.sb2025_miniproject_jpa.domain;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Transient;
 import lombok.*;
 
 @Entity
@@ -18,6 +19,8 @@ public class BoardUpFile implements Comparable<BoardUpFile> {
     private String originalFileName;
 
     private int ord;
+
+    private boolean img;
 
     @ManyToOne
     private Board board;

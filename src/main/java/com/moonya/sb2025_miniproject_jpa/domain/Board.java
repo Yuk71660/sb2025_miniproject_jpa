@@ -5,8 +5,6 @@ import lombok.*;
 import org.hibernate.annotations.BatchSize;
 
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 // 엔티티 클래스에 setter쓰면 죄다 db에 업데이트 날리니까 @쓰지말고 필요한거만 직접 만들자
@@ -48,11 +46,12 @@ public class Board extends BaseEntity {
         this.readCount = this.readCount + 1l;
     }
 
-    public void addUpFile(String uuid, String originalFileName) {
+    public void addUpFile(String uuid, String originalFileName, Boolean img) {
         BoardUpFile boardUpFile = BoardUpFile.builder()
                 .uuid(uuid)
                 .originalFileName(originalFileName)
                 .board(this)
+                .img(img)
                 .ord(this.fileSet.size())
                 .build();
         this.fileSet.add(boardUpFile);
