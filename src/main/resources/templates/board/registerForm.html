@@ -88,6 +88,7 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/js/upload.js"></script>
 </div>
 
 <script layout:fragment="scripts" th:inline="javascript">
@@ -187,9 +188,70 @@
                     const percentCompleted = Math.round((progressEvent.loaded / progressEvent.total)*100);
                     progressBar.style.width = percentCompleted + '%';
                     progressBar.innerText = percentCompleted + '%';
+                    progressBar.closest('.mb-2').querySelector('.uploadPercent').innerText = `(${progressEvent.loaded}/${progressEvent.total})`
                 }
             })
+            .then((result)=>{
+                console.log(result);
+                progressBar.style.width = '100%';
+                progressBar.innerText = '100%';
+                for(let uploadResult of result.data) {
+                    showUploadFile(uploadResult)
+                }
+                document.querySelector(".uploadModal input[name='files']").value = '';
+                progressbarContainer.innerHTML='';
+                uploadModal.hide();
+            })
+            .catch(error=>{
+                console.log(error);
+                progressBar.style.width = '0%';
+                progressBar.innerText = '업로드 실패';
+            });
         }
+    })
+
+    const uploadResult = document.querySelector('.uploadResult')
+    function showUploadFile({uuid, originalFileName, link, img}) {
+        let output = `<div class='card col-4'>`;
+        output += `<div class='card-header d-flex justify-content-center'>`;
+        output += `<span class='text-center'>${originalFileName}</span>`;
+        output += `<button class='btn btn-outline-danger btn-sm deleteBtn' data-uuid='${uuid}' onclick='removeFile("${uuid}", "${originalFileName}", this);'>`;
+        output += `X`;
+        output += `</button>`;
+        output += `</div>`;
+        output += `<div class='card-body'>`;
+        output += `<img src='/view/${link}' data-src="${uuid + "_" + originalFileName}">`;
+        output += `</div>`;
+        output += `</div>`;
+
+        uploadResult.innerHTML += output;
+    }
+
+    function removeFile(uuid, originalFileName, obj) {
+        const target  = obj.closest('.card');
+        removeFileToServer(uuid, originalFileName).then(result => {
+            console.log(result);
+            if (result.data.isRemove) {
+                uploadResult.removeChild(target);
+            }
+        })
+    }
+
+    document.querySelector('form').addEventListener("submit", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const target = document.querySelector(".uploadHidden");
+        const uploadFiles = uploadResult.querySelectorAll("img, a");
+
+        let hiddenStr = '';
+        for (let file of uploadFiles) {
+            const fileName = file.getAttribute("data-src");
+            hiddenStr += `<input type='hidden' name='fileNames' value='${fileName}'>`
+        }
+        target.innerHTML = hiddenStr;
+
+        this.submit();
     })
 </script>
 
