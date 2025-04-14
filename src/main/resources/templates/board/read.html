@@ -27,6 +27,19 @@
                 <textarea class="form-control" id="content" name="content" rows="5">[[${dto.content}]]</textarea>
             </div>
 
+            <div class="fileList">
+                <div class="card" th:if="${dto.fileNames != null && dto.fileNames.size() > 0}">
+                    <div class="card-img-top" th:each="fileName : ${dto.fileNames}">
+                        <th:block th:if="${fileName.img == true}">
+                            <img th:src="|/view/${fileName.uuid}_${fileName.originalFileName}|">
+                        </th:block>
+                        <th:block th:if="${fileName.img == false}">
+                            <a th:href="|/view/${fileName.uuid}_${fileName.originalFileName}|">[[${fileName.uuid} + '_' + ${fileName.originalFileName}]]</a>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+
             <div class="mb-3">
                 <label for="readCount" class="form-label">조회수</label>
                 <input type="text" class="form-control" id="readCount" name="readCount" th:value="${dto.readCount}" readonly>

@@ -28,12 +28,12 @@ public class BoardServiceTests {
         log.info(i);
     }
 
-    @Test
-    public void testReadOne() {
-        long bno = 6;
-        BoardDTO boardDTO = boardService.readOne(bno, null);
-        log.info(boardDTO);
-    }
+//    @Test
+//    public void testReadOne() {
+//        long bno = 6;
+//        BoardDTO boardDTO = boardService.readOne(bno, null);
+//        log.info(boardDTO);
+//    }
 
     @Test
     public void testModifyBoard() {

@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface BoardReadLogRepository extends JpaRepository<BoardReadLog, Long> {
     @Query("select l from BoardReadLog l where l.board.bno=:bno and l.ipAddr=:ipAddr")
     Optional<BoardReadLog> findByBnoAndIpAddr(@Param("bno") Long bno, @Param("ipAddr") String ipAddr);
+
+    void deleteByBoard_Bno(@Param("bno") Long bno);
 }

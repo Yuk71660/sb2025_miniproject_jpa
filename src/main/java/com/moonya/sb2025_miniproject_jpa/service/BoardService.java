@@ -13,7 +13,7 @@ import java.util.Set;
 public interface BoardService {
     Long registerBoard(BoardDTO boardDTO);
 
-    BoardDTO readOne(Long bno, String addr);
+    BoardReadDTO readOne(Long bno, String addr);
 
     void modifyBoard(BoardDTO boardDTO);
 
@@ -80,8 +80,8 @@ public interface BoardService {
 //
 //    private List<String> fileNames;
 
-    default BoardDTO entityToDTO(Board board) {
-        BoardDTO boardDTO = BoardDTO.builder()
+    default BoardReadDTO entityToDTO(Board board) {
+        BoardReadDTO boardDTO = BoardReadDTO.builder()
                 .bno(board.getBno())
                 .content(board.getContent())
                 .title(board.getTitle())
@@ -91,8 +91,14 @@ public interface BoardService {
                 .modDate(board.getModDate())
                 .build();
 
-        List<String> fileNames = board.getFileSet().stream().sorted().map(boardUpFile -> {
-            return boardUpFile.getUuid() + '_' + boardUpFile.getOriginalFileName();
+        List<BoardUpFileDTO> fileNames = board.getFileSet().stream().sorted().map(boardUpFile -> {
+            BoardUpFileDTO boardUpFileDTO = BoardUpFileDTO.builder()
+                    .uuid(boardUpFile.getUuid())
+                    .ord(boardUpFile.getOrd())
+                    .originalFileName(boardUpFile.getOriginalFileName())
+                    .img(boardUpFile.isImg())
+                    .build();
+            return boardUpFileDTO;
         }).toList();
 
         boardDTO.setFileNames(fileNames);

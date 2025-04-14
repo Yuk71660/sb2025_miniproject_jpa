@@ -77,8 +77,8 @@ public class BoardController {
 
     @PostMapping("/modify")
     public String modifyBoard(BoardDTO boardDTO) {
-        boardService.modifyBoard(boardDTO);
         System.out.println("수정 완료" + boardDTO);
+        boardService.modifyBoard(boardDTO);
         return "redirect:/board/read?bno=" + boardDTO.getBno();
 
     }

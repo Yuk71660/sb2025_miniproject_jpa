@@ -6,7 +6,7 @@
 
         <h1>게시글 수정 페이지</h1>
 
-        <form class="mt-4" action="/board/modify" method="post">
+        <form class="mt-4 modifyForm" action="/board/modify" method="post">
             <div class="mb-3">
                 <label for="bno" class="form-label">글 번호</label>
                 <input type="text" class="form-control" id="bno" name="bno" th:value="${dto.bno}" readonly>
@@ -27,6 +27,28 @@
                 <textarea class="form-control" id="content" name="content" rows="5">[[${dto.content}]]</textarea>
             </div>
 
+            <div class="fileList" th:if="${dto.fileNames != null && dto.fileNames.size() > 0}">
+                <div class="card" th:each="fileName : ${dto.fileNames}">
+                    <div class="card-img-top">
+                        <th:block th:if="${fileName.img == true}">
+                            <img class="modifiedFile" th:src="|/view/${fileName.uuid}_${fileName.originalFileName}|" th:data-src="${fileName.uuid + '_' + fileName.originalFileName}" th:data-fileName="${fileName.uuid + '_' + fileName.originalFileName}" th:data-uuid="${fileName.uuid}" th:data-originalFileName="${fileName.originalFileName}">
+                            <img th:src="@{/images/remove.png}" style="width:15px" onclick="checkRemoveFile(this)"/>
+                        </th:block>
+                        <th:block th:if="${fileName.img == false}">
+                            <a th:href="|/view/${fileName.uuid}_${fileName.originalFileName}|">[[${fileName.uuid} + '_' + ${fileName.originalFileName}]]</a>
+                        </th:block>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col">
+                        <div class="container-fluid d-flex uploadResult" style="flex-wrap: wrap;">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
             <div class="mb-3">
                 <label for="readCount" class="form-label">조회수</label>
                 <input type="text" class="form-control" id="readCount" th:value="${dto.readCount}" readonly>
@@ -42,10 +64,21 @@
                 <input type="text" class="form-control" id="modDate" th:value="${#temporals.format(dto.modDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
             </div>
 
+            <div class="input-group mb-3">
+                <span class="input-group-text">Images</span>
+                <div class="float-end uploadHidden">
+                    <button class="btn btn-primary uploadFileBtn" type="button" >
+                        Add Files
+                    </button>
+                </div>
+            </div>
+
             <div class="d-flex justify-content-end mt-4 mb-3">
-                <button type="submit" class="btn btn-primary me-2">수정 적용</button>
+                <button type="submit" class="btn btn-primary me-2" id="modifyBtn">수정 적용</button>
                 <button type="button" class="btn btn-secondary" onclick="location.href='/board/read?bno=[[${dto.bno}]]'">수정 취소</button>
             </div>
+
+            <div id="uploadHidden"></div>
 
         </form>
 
@@ -67,9 +100,72 @@
             </div>
         </div>
 
+        <div class="modal uploadModal" tabindex="-1" id="uploadModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Upload Files</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="input-group mb-3">
+                            <input type="file" name="files" class="form-control uploadTag" multiple />
+                            <!-- 첨부파일 업롣드 프로그레스 바 -->
+                            <div class="progress w-100 mt-2" style="height: 20px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 50%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">50%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary uploadBtn">Upload</button>
+                        <button type="button" class="btn btn-outline-dark closeUploadBtn" >Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="/js/upload.js"></script>
     </div>
 
 <script layout:fragment="scripts" th:inline="javascript">
+    let removeFiles = new Array;
+
+    document.querySelector('#modifyBtn').addEventListener('click', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+
+        const fileList = document.querySelector('.fileList');
+        const target = document.querySelector('#uploadHidden');
+        const uploadFiles = fileList.querySelectorAll('.modifiedFile');
+
+        let hiddenStr=''
+        for (let file of uploadFiles) {
+            const fileName = file.getAttribute("data-src");
+            hiddenStr += `<input type="hidden" name="fileNames" value="${fileName}"></input>`;
+        }
+        target.innerHTML = hiddenStr
+
+        removeFiles.forEach(function(file){
+            removeFileToServer(file.uuid, file.originalFileName).then(result => console.log(result));
+        })
+
+        const form = document.querySelector('.modifyForm')
+        form.action = '/board/modify';
+        form.method = 'post';
+        form.submit();
+    })
+
+    function checkRemoveFile(obj) {
+        const deletedFileName = {
+            'fileName' : obj.previousElementSibling.getAttribute("data-fileName"),
+            'uuid' : obj.previousElementSibling.getAttribute("data-uuid"),
+            'originalFileName' : obj.previousElementSibling.getAttribute("data-originalFileName")
+        }
+        removeFiles.push(deletedFileName)
+        obj.closest('.card-img-top').remove();
+    }
+
     function confirmRemove(bno, link) {
         const modal = document.querySelector('#errorModal');
         const modalTitle = modal.querySelector('.modal-title');
@@ -104,6 +200,133 @@
         cancelBtn.addEventListener('click', () => {
             modal.style.display = 'none';
         });
+    }
+
+    const uploadModal = new bootstrap.Modal(document.querySelector(".uploadModal"))
+
+    document.querySelector(".uploadFileBtn").addEventListener("click",function (e){
+        e.preventDefault();
+        e.stopPropagation();
+        uploadModal.show();
+    })
+
+    document.querySelectorAll(".closeUploadBtn").forEach((element)=>{
+        element.addEventListener("click",function (e){
+            e.preventDefault();
+            e.stopPropagation();
+            uploadModal.hide();
+
+            document.querySelector(".uploadTag").value = "";
+
+            document.querySelector(".progress-bar").style.width = '0%';
+            document.querySelector(".progress-bar").innerText = '0%';
+
+            const progressbarContainer = document.querySelector(".uploadModal .modal-body > div:last-child");
+            if(progressbarContainer) {
+                progressbarContainer.remove();
+            }
+        })
+    })
+
+    document.querySelector(".uploadBtn").addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const formData = new FormData();
+        const files = document.querySelector(".uploadModal input[name='files']").files;
+        console.log(files);
+
+        const maxFileSize = 1024 * 1024 * 10;
+
+        for(let file of files) {
+            if (file.size > maxFileSize) {
+                alert(`${file.name}의 크기가 10mb를 초과합니다.`)
+                document.querySelector(".uploadTag").value = "";
+            } else {
+                formData.append('files', file);
+            }
+        }
+
+        // 파일 진행 상태를 표시할 프로그레스바 컨테이너 생성
+        const progressbarContainer = document.createElement('div')
+        document.querySelector('.uploadModal .modal-body').appendChild(progressbarContainer)
+
+        for (let file of files) {
+            // 파일별 진행바 생성
+            const fileProgress = document.createElement('div');
+            fileProgress.className = 'mb-2';
+            fileProgress.innerHTML = `
+                <div class="small mb-1">${file.name.length > 7 ? file.name.substring(0,7) + '...' : file.name}<span class="uploadPercent"></span></div>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                </div>
+            `;
+            progressbarContainer.appendChild(fileProgress);
+
+            const progressBar = fileProgress.querySelector(".progress-bar");
+
+            const singleFormData = new FormData();
+            singleFormData.append('files', file);
+
+            axios({
+                method: 'post',
+                url: '/upload',
+                data: singleFormData,
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                onUploadProgress: function (progressEvent) {
+                    console.log(progressEvent)
+                    const percentCompleted = Math.round((progressEvent.loaded / progressEvent.total)*100);
+                    progressBar.style.width = percentCompleted + '%';
+                    progressBar.innerText = percentCompleted + '%';
+                    progressBar.closest('.mb-2').querySelector('.uploadPercent').innerText = `(${progressEvent.loaded}/${progressEvent.total})`
+                }
+            })
+            .then((result)=>{
+                console.log(result);
+                progressBar.style.width = '100%';
+                progressBar.innerText = '100%';
+                for(let uploadResult of result.data) {
+                    showUploadFile(uploadResult)
+                }
+                document.querySelector(".uploadModal input[name='files']").value = '';
+                progressbarContainer.innerHTML='';
+                uploadModal.hide();
+            })
+            .catch(error=>{
+                console.log(error);
+                progressBar.style.width = '0%';
+                progressBar.innerText = '업로드 실패';
+            });
+        }
+    })
+
+    const uploadResult = document.querySelector('.uploadResult')
+    function showUploadFile({uuid, originalFileName, link, img}) {
+        let output = `<div class='card col-4'>`;
+        output += `<div class='card-header d-flex justify-content-center'>`;
+        output += `<span class='text-center'>${originalFileName}</span>`;
+        output += `<button type="button" class='btn btn-outline-danger btn-sm deleteBtn' data-uuid='${uuid}' onclick='removeFile("${uuid}", "${originalFileName}", this);'>`;
+        output += `X`;
+        output += `</button>`;
+        output += `</div>`;
+        output += `<div class='card-body'>`;
+        output += `<img class="modifiedFile" src='/view/${link}' data-src="${uuid + "_" + originalFileName}">`;
+        output += `</div>`;
+        output += `</div>`;
+
+        uploadResult.innerHTML += output;
+    }
+
+    function removeFile(uuid, originalFileName, obj) {
+        const target  = obj.closest('.card');
+        removeFileToServer(uuid, originalFileName).then(result => {
+            console.log(result);
+            if (result.data.isRemove) {
+                uploadResult.removeChild(target);
+            }
+        })
     }
 </script>
 

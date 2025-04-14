@@ -5,6 +5,8 @@ import com.moonya.sb2025_miniproject_jpa.domain.BoardReadLog;
 import com.moonya.sb2025_miniproject_jpa.dto.*;
 import com.moonya.sb2025_miniproject_jpa.repository.BoardReadLogRepository;
 import com.moonya.sb2025_miniproject_jpa.repository.BoardRepository;
+import com.moonya.sb2025_miniproject_jpa.repository.ReplyRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -25,6 +27,7 @@ public class BoardServiceImpl implements BoardService {
     private final ModelMapper modelMapper;
     private final BoardRepository boardRepository;
     private final BoardReadLogRepository boardReadLogRepository;
+    private final ReplyRepository replyRepository;
 
     @Override
     public Long registerBoard(BoardDTO boardDTO) {
@@ -38,14 +41,15 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardDTO readOne(Long bno, String ipAddr) {
+    public BoardReadDTO readOne(Long bno, String ipAddr) {
 
         Optional<Board> result = boardRepository.findById(bno);
         Board board = result.orElseThrow();
 
         readCountProcess(bno, ipAddr, board);
 
-        BoardDTO dto = modelMapper.map(board, BoardDTO.class);
+        BoardReadDTO dto = entityToDTO(board);
+
         return dto;
     }
 
@@ -77,17 +81,45 @@ public class BoardServiceImpl implements BoardService {
         if (result.isPresent()) {
             Board board = result.get();
 
+            board.clearAllFiles();
+
             board.setTitle( boardDTO.getTitle());
             board.setContent(boardDTO.getContent());
+
+            if (boardDTO.getFileNames() != null) {
+                for(String fileName : boardDTO.getFileNames()) {
+                    // uuid(36자리) + _ + 원본이름
+                    String uuid = fileName.substring(0,36) ;
+                    String originalFileName = fileName.substring(37);
+                    String ext = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
+                    Boolean img = false;
+                    if (ext != null && (
+                            ext.equalsIgnoreCase("jpg") ||
+                                    ext.equalsIgnoreCase("jpeg") ||
+                                    ext.equalsIgnoreCase("png") ||
+                                    ext.equalsIgnoreCase("gif") ||
+                                    ext.equalsIgnoreCase("bmp") ||
+                                    ext.equalsIgnoreCase("webp") ||
+                                    ext.equalsIgnoreCase("tiff") ||
+                                    ext.equalsIgnoreCase("svg")
+                    )) {
+                        img = true;
+                    }
+                    board.addUpFile(uuid, originalFileName, img);
+                }
+            }
 
             boardRepository.save(board);
         }
     }
 
     @Override
+    @Transactional
     public void removeBoard(Long bno) {
         Optional<Board> result = boardRepository.findById(bno);
         if (result.isPresent()) {
+            boardReadLogRepository.deleteByBoard_Bno(bno);
+            replyRepository.deleteByBoard_Bno(bno);
             boardRepository.deleteById(bno);
         } else {
             throw new NoSuchElementException();
