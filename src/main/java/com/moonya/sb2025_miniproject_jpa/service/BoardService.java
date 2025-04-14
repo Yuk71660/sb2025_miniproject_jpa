@@ -79,4 +79,24 @@ public interface BoardService {
 //    private LocalDateTime modDate;
 //
 //    private List<String> fileNames;
+
+    default BoardDTO entityToDTO(Board board) {
+        BoardDTO boardDTO = BoardDTO.builder()
+                .bno(board.getBno())
+                .content(board.getContent())
+                .title(board.getTitle())
+                .writer(board.getWriter())
+                .readCount(board.getReadCount())
+                .regDate(board.getRegDate())
+                .modDate(board.getModDate())
+                .build();
+
+        List<String> fileNames = board.getFileSet().stream().sorted().map(boardUpFile -> {
+            return boardUpFile.getUuid() + '_' + boardUpFile.getOriginalFileName();
+        }).toList();
+
+        boardDTO.setFileNames(fileNames);
+
+        return  boardDTO;
+    }
 }
